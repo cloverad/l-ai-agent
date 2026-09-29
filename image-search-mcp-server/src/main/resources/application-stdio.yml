@@ -1,0 +1,24 @@
+server:
+  port: -1
+
+spring:
+  main:
+    web-application-type: none
+    banner-mode: off
+  ai:
+    mcp:
+      server:
+        stdio: true
+        name: image-search-mcp-server
+        version: 1.0.0
+        type: SYNC
+
+# MCP stdio 模式下禁止日志打到 stdout，避免污染 JSON-RPC
+logging:
+  pattern:
+    console:
+  file:
+    name: ${user.dir}/tmp/image-search-mcp-server.log
+  level:
+    root: INFO
+    com.ljr.mcp: INFO

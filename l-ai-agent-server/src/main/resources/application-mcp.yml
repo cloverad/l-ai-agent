@@ -1,0 +1,14 @@
+# 可选：启用 MCP 图片搜索客户端（默认关闭，避免强依赖 MCP JAR）
+# 启动前请先在仓库根目录执行：
+#   mvn -pl image-search-mcp-server -am package -DskipTests
+# 并设置 PEXELS_API_KEY、APP_MCP_ENABLED=true
+# mcp-servers.json 中 JAR 为相对仓库根目录的路径，请从 l-ai-agent 根目录启动主服务
+app:
+  mcp:
+    enabled: true
+
+spring:
+  ai:
+    mcp:
+      client:
+        enabled: true

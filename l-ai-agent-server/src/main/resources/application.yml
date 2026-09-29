@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: l-ai-agent-server
+  profiles:
+    active: dashscope
+  datasource:
+    url: jdbc:postgresql://localhost:5432/travel_agent
+    username: ${POSTGRES_USER:root}
+    password: ${POSTGRES_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      continue-on-error: true
+  ai:
+    vectorstore:
+      pgvector:
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1024
+        initialize-schema: true
+    mcp:
+      client:
+        enabled: ${app.mcp.enabled:false}
+        name: l-ai-agent-mcp-client
+        version: 1.0.0
+        request-timeout: 60s
+        type: SYNC
+        toolcallback:
+          enabled: true
+        stdio:
+          servers-configuration: classpath:mcp-servers.json
+
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+
+app:
+  chat-memory:
+    dir: ${user.dir}/tmp/chat-memory
+  file-tool:
+    dir: ${user.dir}/tmp/files
+  search-api:
+    api-key: ${SEARCH_API_KEY:}
+  mcp:
+    # true 时通过 stdio 拉起 image-search-mcp-server；需先 mvn package 该子模块
+    enabled: ${APP_MCP_ENABLED:false}
+
+pexels:
+  api-key: ${PEXELS_API_KEY:}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.ljr.controller
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+logging:
+  level:
+    com.ljr: INFO
+    org.springframework.ai: INFO

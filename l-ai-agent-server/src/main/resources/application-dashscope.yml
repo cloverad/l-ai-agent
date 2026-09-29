@@ -1,0 +1,12 @@
+# 阿里云百炼：OpenAI 兼容模式（qwen3.8-max 仅支持该端点）
+spring:
+  ai:
+    openai:
+      api-key: ${DASHSCOP_API_KEY:}
+      base-url: https://dashscope.aliyuncs.com/compatible-mode
+      chat:
+        options:
+          model: qwen3.8-max
+      embedding:
+        options:
+          model: text-embedding-v3
