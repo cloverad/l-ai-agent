@@ -1,6 +1,6 @@
 # L-AI Agent · AI 旅行管家
 
-基于 **Spring Boot 3 + Spring AI** 的智能旅行助手：多轮对话、知识库 RAG、工具调用、MCP 图片搜索，以及可自主规划的 **TravelManus** 智能体。配套 Vue 3 前端支持 SSE 流式对话、图片卡片预览与 PDF 下载。
+基于 **Spring Boot 3 + Spring AI** 的智能旅行助手：多轮对话、知识库 RAG、工具调用、MCP 图片搜索，以及可自主规划的 **TravelManus** 智能体。本仓库为前后端一体（Monorepo），Vue 3 前端支持 SSE 流式对话、图片卡片预览与 PDF 下载。
 
 ---
 
@@ -26,10 +26,10 @@
 - 向量库：PostgreSQL + pgvector
 - 文档：Knife4j / OpenAPI
 
-**前端（仓库旁的 `ai-frontend`）**
+**前端（`ai-frontend/`）**
 
 - Vue 3 · Vite · TypeScript · Vue Router
-- SSE（EventSource）流式输出
+- SSE（EventSource）流式输出；开发代理 `/api` → `http://localhost:8123`
 
 ---
 
@@ -39,11 +39,10 @@
 l-ai-agent/
 ├── l-ai-agent-server/          # 主服务（端口 8123，context-path /api）
 ├── image-search-mcp-server/    # 图片搜索 MCP 子服务（可选）
-├── .env.example                # 环境变量模板（勿提交真实 .env）
+├── ai-frontend/                # Vue 3 前端（开发端口 5173）
+├── .env.example                # 后端环境变量模板（勿提交真实 .env）
+├── README.md
 └── pom.xml                     # Maven 多模块父工程
-
-# 配套前端（通常与本仓库同级）
-ai-frontend/                    # Vue 开发服务器默认 5173
 ```
 
 ---
@@ -53,7 +52,7 @@ ai-frontend/                    # Vue 开发服务器默认 5173
 - JDK **21+**
 - Maven **3.9+**（或使用仓库自带 `mvnw`）
 - PostgreSQL **15+**，并安装 **[pgvector](https://github.com/pgvector/pgvector)** 扩展
-- Node.js **20+**（仅跑前端时需要）
+- Node.js **20+**（运行前端）
 - 阿里云百炼 API Key（环境变量名：`DASHSCOP_API_KEY`）
 
 可选：
@@ -119,15 +118,16 @@ mvn -pl l-ai-agent-server -am spring-boot:run
 
 ### 4. 启动前端
 
-若本地有配套前端目录 `ai-frontend`：
+另开终端，仍在本仓库内：
 
 ```bash
-cd ../ai-frontend
+cd ai-frontend
 npm install
 npm run dev
 ```
 
-浏览器打开 Vite 提示的地址（默认 `http://localhost:5173`）。
+浏览器打开 Vite 提示的地址（默认 `http://localhost:5173`）。  
+开发环境下请求 `/api/*` 由 Vite 代理到后端 `8123`，一般无需改 `ai-frontend/.env.development`。
 
 ---
 
@@ -167,6 +167,7 @@ npm run dev
 | `server.port` | 默认 `8123` |
 | `app.chat-memory.dir` | 对话记忆目录（默认 `./tmp/chat-memory`） |
 | `app.file-tool.dir` | 工具生成文件目录（默认 `./tmp/files`） |
+| `VITE_API_BASE` | 前端 API 前缀（开发默认 `/api`） |
 
 模型与 Embedding 见 `application-dashscope.yml`（可通过 profile 调整）。
 
@@ -174,7 +175,7 @@ npm run dev
 
 ## 安全须知
 
-- 仓库已忽略 `.env`、`tmp/`、`target/`、密钥与本地媒体等，**切勿**强制添加真实密钥。
+- 仓库已忽略 `.env`、`tmp/`、`target/`、`node_modules/`、密钥与本地媒体等，**切勿**强制添加真实密钥。
 - 对外开源前请确认：未提交 API Key、聊天记录、生成的 PDF/图片。
 - 默认数据库口令仅适合本地演示，生产环境请更换。
 
@@ -183,11 +184,15 @@ npm run dev
 ## 开发与测试
 
 ```bash
-# 编译
+# 后端编译
 mvn -pl l-ai-agent-server,image-search-mcp-server -am -DskipTests compile
 
-# 运行指定测试（需已配置密钥的环境）
+# 后端指定测试（需已配置密钥的环境）
 mvn -pl l-ai-agent-server -Dtest=ImageSearchToolIT test
+
+# 前端类型检查 / 构建
+cd ai-frontend
+npm run build
 ```
 
 ---
@@ -196,7 +201,7 @@ mvn -pl l-ai-agent-server -Dtest=ImageSearchToolIT test
 
 - [ ] 对话记忆持久化到数据库
 - [ ] 知识库命中不足时与联网搜索的显式路由策略
-- [ ] 前端与后端 monorepo 统一发布
+- [ ] 前端生产构建产物由 Nginx 或后端静态资源托管
 
 ---
 
