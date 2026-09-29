@@ -1,8 +1,51 @@
 HELP.md
 target/
+**/target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+### Local / secrets ###
+.env
+**/.env
+.env.*
+!.env.example
+*.env.local
+*.pem
+*.p12
+*.jks
+credentials*.json
+**/secrets/
+**/chat-memory/
+
+### Runtime artifacts ###
+tmp/
+**/tmp/
+logs/
+**/logs/
+*.log
+*.pid
+
+### Generated media / downloads (safety net) ###
+*.pdf
+!**/src/**/*.pdf
+*.jpg
+*.jpeg
+*.png
+*.webp
+!**/src/**/*.{jpg,jpeg,png,webp}
+!**/public/**/*.{jpg,jpeg,png,webp}
+
+### Frontend ###
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+### OS ###
+.DS_Store
+Thumbs.db
+Desktop.ini
 
 ### STS ###
 .apt_generated
@@ -29,5 +72,6 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
+### VS Code / Cursor ###
 .vscode/
+.cursor/
